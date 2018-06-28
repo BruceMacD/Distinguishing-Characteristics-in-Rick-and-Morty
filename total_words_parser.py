@@ -35,13 +35,12 @@ def calc_word_uniqueness():
     return None
 
 
-# TODO: Doesnt work in case like 'Rick (nana): anwiwn (fnodsno)'
 # strip out any contextual information
 def remove_context(line):
     # information comes in the forms '* *', '( )', and '[ ]'
-    line = re.sub(r"\[(.*)\]", "", line)
-    line = re.sub(r"\*(.*)\*", "", line)
-    line = re.sub(r"\((.*)\)", "", line)
+    line = re.sub(r"\[(.*?)\]", "", line)
+    line = re.sub(r"\*(.*?)\*", "", line)
+    line = re.sub(r"\((.*?)\)", "", line)
     return line
 
 
