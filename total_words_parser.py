@@ -1,10 +1,13 @@
 """
 Parse all transcripts and output word frequencies for each character found
 """
+import os
 import re
 from collections import Counter
 
 transcript_folder = 'transcripts/'
+# the characters we want the features for
+character_names = ['Rick', 'Morty', 'Summer', 'Beth', 'Jerry', 'Jessica', 'Squanchy', 'Meeseeks', 'Pickle Rick']
 # all characters and a counter of their words
 characters = {}
 # counter of number of lines spoken by character
@@ -68,31 +71,40 @@ def count_words(line):
         num_lines_character.update([name])
 
 
-def parse_transcripts():
+def parse_transcripts(path):
     _reg_dialog = re.compile('(.*):(.*)\n')
 
-    with open(transcript_folder + 'season1/Anatomy_Park.txt', 'r') as file:
-        line = next(file)
-        while line:
-            if _reg_dialog.match(line):
-                # strip grammar and new lines from dialog
-                line = re.sub(r"\.?,?\??!?\n?", "", line)
-                # strip out any informational text
-                line = remove_context(line)
-                # split character and dialog
-                line = line.split(':')
-                count_words(line)
+    for filename in os.listdir(path):
+        with open(path + '/' + filename, 'r') as file:
+            line = next(file)
+            while line:
+                if _reg_dialog.match(line):
+                    # strip grammar and new lines from dialog
+                    line = re.sub(r"\.?,?\??!?\n?", "", line)
+                    # strip out any informational text
+                    line = remove_context(line)
+                    # split character and dialog
+                    line = line.split(':')
+                    count_words(line)
 
-            line = next(file, None)
+                line = next(file, None)
+
+
+def output_unique_words(characters):
+    for character in characters:
+        print("Character: {}".format(character))
+        words = character_unique_words[character]
+        # print words from most unique to least unique
+        words_sorted = sorted(words, key=words.__getitem__, reverse=True)
+        print(words_sorted)
 
 
 if __name__ == "__main__":
-    parse_transcripts()
+    # parse transcripts of each season
+    parse_transcripts(transcript_folder + 'season1')
+    parse_transcripts(transcript_folder + 'season2')
+    parse_transcripts(transcript_folder + 'season3')
     # find word uniqueness for each character
     calc_word_uniqueness()
     # output results
-    for character in character_unique_words:
-        print("Character: {}".format(character))
-        words = character_unique_words[character]
-        words_sorted = sorted(words, key=words.__getitem__, reverse=True)
-        print(words_sorted)
+    output_unique_words(character_names)
